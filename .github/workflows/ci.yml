@@ -5,6 +5,12 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
+env:
+  MPLBACKEND: Agg
+
 jobs:
   python:
     runs-on: ubuntu-22.04
@@ -23,6 +29,20 @@ jobs:
       - run: pytest -q
       - run: turtlebot-command-evaluation --output-dir /tmp/turtlebot3-evaluation
 
+      - name: Retain run environment
+        if: always()
+        run: |
+          mkdir -p ci-evidence
+          python --version > ci-evidence/python.txt
+          python -m pip freeze > ci-evidence/requirements.txt
+          git rev-parse HEAD > ci-evidence/git-sha.txt
+          uname -a > ci-evidence/host.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: environment-python-${{ matrix.python-version }}
+          path: ci-evidence/
+          retention-days: 14
   ros2-humble:
     runs-on: ubuntu-22.04
     steps:
@@ -57,3 +77,17 @@ jobs:
         with:
           name: guarded-navigation
           path: /tmp/turtlebot3-navigation/
+      - name: Retain run environment
+        if: always()
+        run: |
+          mkdir -p ci-evidence
+          python --version > ci-evidence/python.txt
+          python -m pip freeze > ci-evidence/requirements.txt
+          git rev-parse HEAD > ci-evidence/git-sha.txt
+          uname -a > ci-evidence/host.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: environment-ros2-humble
+          path: ci-evidence/
+          retention-days: 14
