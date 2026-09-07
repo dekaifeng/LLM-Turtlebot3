@@ -46,4 +46,14 @@ jobs:
       - run: colcon test
       - run: colcon test-result --verbose
       - run: scripts/ros_smoke.sh
+      - name: Final velocity gate ROS integration
+        run: |
+          source /opt/ros/humble/setup.bash
+          source install/setup.bash
+          python3 scripts/gate_smoke.py
       - run: scripts/navigation_smoke.sh /tmp/turtlebot3-navigation
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: guarded-navigation
+          path: /tmp/turtlebot3-navigation/

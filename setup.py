@@ -24,6 +24,7 @@ setup(
     entry_points={
         "console_scripts": [
             "safe_controller = turtlebot3_multimodal.ros_node:main",
+            "velocity_gate = turtlebot3_multimodal.gate_node:main",
             "evaluate_commands = turtlebot3_multimodal.evaluate_cli:main",
             "navigation_evaluator = turtlebot3_multimodal.navigation_evaluator:main",
         ],

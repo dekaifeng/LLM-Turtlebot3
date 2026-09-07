@@ -1,5 +1,13 @@
 # Safe Multimodal TurtleBot3
 
+Run structured motion commands and headless Nav2 evaluation with a final
+velocity gate. [Quick start](#python-verification) · [navigation](docs/navigation.md) ·
+[CI](https://github.com/dekaifeng/LLM-Turtlebot3/actions).
+
+The guarded navigation launch routes the simulated drive through `/cmd_vel_safe`.
+Its final gate selects one input source, bounds velocity, and latches emergency
+stop or a stale-input watchdog. See the topic contract in the navigation note.
+
 ## Project timeline and provenance
 
 | Milestone | Date | Scope |
@@ -74,7 +82,7 @@ arguments, interpretation, and limitations.
 
 ![Gazebo navigation trajectory](results/navigation/navigation_trajectory.png)
 
-The table is one measured software-simulation run; small scheduling-dependent
+The table is one measured pre-gate software-simulation run; small scheduling-dependent
 variation is expected. Raw odometry, metrics, the occupancy map, and the figure
 are committed under `results/navigation/`.
 
@@ -85,9 +93,12 @@ flowchart LR
     A[Gesture / Voice / LLM / Keyboard] --> B[Strict JSON parser]
     B --> C[Whitelist and numeric limits]
     C --> D[Non-blocking MotionExecutor]
-    D --> E[ROS 2 /cmd_vel]
-    G[Gazebo / SLAM Toolbox / Nav2] --> E
+    D --> E[Manual input]
+    G[SLAM Toolbox / Nav2] --> H[Final velocity gate]
+    E --> H
+    H --> I[/cmd_vel_safe -> simulated drive]
     F[Watchdog / emergency-stop service] --> D
+    F --> H
 ```
 
 ## Command example
