@@ -56,6 +56,7 @@ def test_model_routing_fails_closed_for_unexpected_models(tmp_path):
                       '<command_topic>cmd_vel</command_topic></plugin></sdf>')
     write_guarded_model(str(source), str(target))
     assert "/cmd_vel_safe" in target.read_text()
+    assert "<?xml" not in target.read_text()
     source.write_text("<sdf/>")
     with pytest.raises(ValueError, match="exactly one"):
         write_guarded_model(str(source), str(target))

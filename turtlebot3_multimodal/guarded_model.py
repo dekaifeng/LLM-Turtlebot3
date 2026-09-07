@@ -18,5 +18,6 @@ def write_guarded_model(source: str, destination: str) -> str:
             raise ValueError("unexpected velocity remapping in source model")
     command.text = "/cmd_vel_safe"
     Path(destination).parent.mkdir(parents=True, exist_ok=True)
-    tree.write(destination, encoding="utf-8", xml_declaration=True)
+    # Humble spawn_entity passes Unicode to lxml, which rejects encoding declarations.
+    tree.write(destination, encoding="utf-8", xml_declaration=False)
     return destination
