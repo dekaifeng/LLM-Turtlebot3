@@ -83,6 +83,8 @@ def main(args=None) -> None:
     except KeyboardInterrupt:
         pass
     finally:
-        node._publish(Velocity())
+        if rclpy.ok():
+            node._publish(Velocity())
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
